@@ -37,7 +37,6 @@ import android.widget.RelativeLayout;
 import com.google.zxing.Result;
 import com.xys.libzxing.R;
 import com.xys.libzxing.zxing.camera.CameraManager;
-import com.xys.libzxing.zxing.camera.open.OpenCameraInterface;
 import com.xys.libzxing.zxing.decode.DecodeThread;
 import com.xys.libzxing.zxing.utils.BeepManager;
 import com.xys.libzxing.zxing.utils.CaptureActivityHandler;
@@ -236,24 +235,13 @@ public final class CaptureActivity extends AppCompatActivity implements SurfaceH
             flashbutton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //先杀掉扫描的Camera
-                    cameraManager.stopPreview();
-                    //获取parameters而获取camera
-                    Log.e("删除后到这","主要查看关闭");
-                    if(camera == null) {
-                        Log.e("camera为空有没有进来","isflash为"+isflash);
-                        camera = OpenCameraInterface.open();
                         if (!isflash) {
-                            Log.e("xxxxx", "xxxxsadsa - on");
                             openLight();
                             isflash = true;
                         } else if (isflash) {
                             offLight();
-                            Log.e("xxxxx", "xxxxsadsa- off");
                             isflash = false;
                         }
-                    }
-
                 }
             });
         } catch (IOException ioe) {
@@ -267,8 +255,8 @@ public final class CaptureActivity extends AppCompatActivity implements SurfaceH
         }
     }
 
+    // camera error
     private void displayFrameworkBugMessageAndExit() {
-        // camera error
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(getString(R.string.zxing_bar_name));
         builder.setMessage("Camera error");
@@ -352,23 +340,25 @@ public final class CaptureActivity extends AppCompatActivity implements SurfaceH
      * 打开闪光灯
      */
     public synchronized void openLight() {
-        Log.e(TAG, "openLight"+ camera);
-        if (camera != null) {
+            camera = CameraManager.camera;
+            //调用Camera.getParameters()得到一个Camera.Parameters对象
             parameters = camera.getParameters();
-            parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+            //通过得到的Parametes设置相机参数
+            parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);//闪光灯开启
+            //使相机参数生效，应用程序必须调用setparameters（相机参数。）
             camera.setParameters(parameters);
-        }
+
     }
 
     /**
      * 关闭闪光灯
      */
     public synchronized void offLight() {
-        Log.e(TAG, "offLight");
-        Log.e(TAG, "offLight"+camera);
+           Log.e(TAG, "offLight");
+           Log.e(TAG, "offLight"+camera);
         if (camera != null) {
             parameters = camera.getParameters();
-            parameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+            parameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);//闪光灯关闭
             camera.setParameters(parameters);
         }
     }

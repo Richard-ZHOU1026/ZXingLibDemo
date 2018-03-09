@@ -41,18 +41,19 @@ public class CameraManager {
 
     private final Context context;
     private final CameraConfigurationManager configManager;
-    private static CameraManager cameraManager;
+
     /**
      * Preview frames are delivered here, which we pass on to the registered
      * handler. Make sure to clear the handler so it will only receive one
      * message.
      */
     private final PreviewCallback previewCallback;
-    public Camera camera;
+    public  static Camera camera;
     private AutoFocusManager autoFocusManager;
     private boolean initialized;
     private boolean previewing;
     private int requestedCameraId = -1;
+
 
     public CameraManager(Context context) {
         this.context = context;
@@ -126,16 +127,13 @@ public class CameraManager {
      *
      * @return A reference to the CameraManager singleton.
      */
-    public static CameraManager get() {
-        return cameraManager;
-    }
-
     public synchronized boolean isOpen() {
         return camera != null;
     }
 
     /**
      * Closes the camera driver if still in use.
+     * 关闭释放camera
      */
     public synchronized void closeDriver() {
         if (camera != null) {
@@ -149,6 +147,7 @@ public class CameraManager {
 
     /**
      * Asks the camera hardware to begin drawing preview frames to the screen.
+     * 打开预览
      */
     public synchronized void startPreview() {
         Camera theCamera = camera;
@@ -161,21 +160,20 @@ public class CameraManager {
 
     /**
      * Tells the camera to stop drawing preview frames.
+     * 停止预览
      */
     public synchronized void stopPreview() {
         if (autoFocusManager != null) {
             autoFocusManager.stop();
             autoFocusManager = null;
         }
-        Log.e("检测是否为空","+++++++++++删前"+camera);
+        camera.stopPreview();
+        camera.release();
         if (camera != null && previewing) {
-            camera.stopPreview();
-            camera.release();
-            camera = null;
             previewCallback.setHandler(null, 0);
             previewing = false;
         }
-        Log.e("检测是否为空","+++++++++++删后"+camera);
+
     }
 
 
@@ -223,7 +221,9 @@ public class CameraManager {
         return null;
     }
 
-    public void getCamera(){
-          camera = this.camera ;
+
+    public Camera getCamera(){
+        return camera;
+
     }
 }

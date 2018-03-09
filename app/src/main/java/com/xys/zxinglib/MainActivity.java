@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -71,10 +70,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.e("xxxxxsssasdasdsa","++++++++++"+resultCode+"*****"+data);
         if(data == null)return;
         if (resultCode == RESULT_OK) {
-            Log.e("xxxxxsssasdasdsa","怕不能断后"+resultCode);
                 Bundle bundle = data.getExtras();
                 String scanResult = bundle.getString("result");
                 resultTextView.setText(scanResult);
